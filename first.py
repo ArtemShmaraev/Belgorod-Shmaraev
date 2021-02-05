@@ -1,15 +1,16 @@
 # -*- coding: utf8 -*-
+import datetime as dt
+import email.message
+import smtplib
+import sqlite3
 import sys
+from math import fabs
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QWidget, QTableWidgetItem, QPushButton, QLabel, \
     QMessageBox
-from PyQt5.QtGui import QColor
-from PyQt5.QtCore import Qt
-import datetime as dt
-import sqlite3
-from math import fabs
-from PyQt5 import QtCore, QtGui, QtWidgets
-import smtplib
-import email.message
 
 
 class Cinema:
@@ -84,6 +85,7 @@ class Seans:
         self.date = date
         self.zal = matrix
         self.n = zal.n
+        self.all = False
         self.price = price
         rec = (lambda x: sum(map(rec, x)) if isinstance(x, list) else x)
         res = rec(self.zal)
@@ -110,6 +112,13 @@ class Seans:
             s += "\n"
         return s
 
+    def al(self):
+        s = 0
+        for i in range(self.y):
+            s += sum(self.zal[i])
+        if s == self.y * self.x:
+            self.all = True
+
 
 cinema = Cinema("Русич")
 
@@ -128,16 +137,16 @@ class Ui_Append_Zal(object):
         Form.setObjectName("Form")
         Form.resize(600, 500)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 10, 561, 471))
         self.gridLayoutWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"\n"
-"border-radius: 8px;\n"
-"\n"
-"\n"
-"")
+                                            "\n"
+                                            "border-radius: 8px;\n"
+                                            "\n"
+                                            "\n"
+                                            "")
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -151,9 +160,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.label_4.setFont(font)
         self.label_4.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
         self.pushButton = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -164,8 +173,8 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 6, 0, 1, 2)
         self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -175,9 +184,10 @@ class Ui_Append_Zal(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+        self.pushButton_2.setStyleSheet(
+            "background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
+            "border: 2px solid rgb(255, 255, 255);\n"
+            "border-radius: 8px;")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 8, 0, 1, 2)
         self.label_3 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -188,9 +198,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 4, 0, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -201,9 +211,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_5.setText("")
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
@@ -216,7 +226,8 @@ class Ui_Append_Zal(object):
         font.setBold(True)
         font.setWeight(75)
         self.label.setFont(font)
-        self.label.setStyleSheet("background-color: rgb(70, 68, 81);\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);")
+        self.label.setStyleSheet(
+            "background-color: rgb(70, 68, 81);\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 2)
@@ -228,9 +239,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 5, 0, 1, 1)
         self.spinBox_3 = QtWidgets.QSpinBox(self.gridLayoutWidget)
@@ -241,9 +252,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.spinBox_3.setFont(font)
         self.spinBox_3.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
-        self.spinBox_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+                                     "border-radius: 12px;\n"
+                                     "color: rgb(255, 255, 255);")
+        self.spinBox_3.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.spinBox_3.setMaximum(20)
         self.spinBox_3.setObjectName("spinBox_3")
         self.gridLayout.addWidget(self.spinBox_3, 5, 1, 1, 1)
@@ -255,9 +266,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.spinBox.setFont(font)
         self.spinBox.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
-        self.spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+                                   "border-radius: 12px;\n"
+                                   "color: rgb(255, 255, 255);")
+        self.spinBox.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.spinBox.setObjectName("spinBox")
         self.gridLayout.addWidget(self.spinBox, 2, 1, 1, 1)
         self.spinBox_2 = QtWidgets.QSpinBox(self.gridLayoutWidget)
@@ -268,9 +279,9 @@ class Ui_Append_Zal(object):
         font.setWeight(75)
         self.spinBox_2.setFont(font)
         self.spinBox_2.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
-        self.spinBox_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+                                     "border-radius: 12px;\n"
+                                     "color: rgb(255, 255, 255);")
+        self.spinBox_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.spinBox_2.setMaximum(45)
         self.spinBox_2.setObjectName("spinBox_2")
         self.gridLayout.addWidget(self.spinBox_2, 4, 1, 1, 1)
@@ -337,16 +348,16 @@ class Ui_Append_Film(object):
         Form.setObjectName("Form")
         Form.resize(600, 500)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 10, 561, 471))
         self.gridLayoutWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"\n"
-"border-radius: 8px;\n"
-"\n"
-"\n"
-"")
+                                            "\n"
+                                            "border-radius: 8px;\n"
+                                            "\n"
+                                            "\n"
+                                            "")
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -357,8 +368,8 @@ class Ui_Append_Film(object):
         font.setPointSize(14)
         self.lineEdit.setFont(font)
         self.lineEdit.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                    "border-radius: 12px;\n"
+                                    "color: rgb(255, 255, 255);")
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout.addWidget(self.lineEdit, 2, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -370,9 +381,9 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_5.setText("")
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
@@ -385,8 +396,8 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 4, 0, 1, 2)
         self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -397,9 +408,9 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.label_4.setFont(font)
         self.label_4.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -410,9 +421,9 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -424,9 +435,9 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                 "background-color: rgb(70, 68, 81);\n"
+                                 "\n"
+                                 "")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 2)
@@ -438,8 +449,8 @@ class Ui_Append_Film(object):
         font.setWeight(75)
         self.comboBox.setFont(font)
         self.comboBox.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                    "border-radius: 12px;\n"
+                                    "color: rgb(255, 255, 255);")
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
@@ -457,9 +468,10 @@ class Ui_Append_Film(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+        self.pushButton_2.setStyleSheet(
+            "background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
+            "border: 2px solid rgb(255, 255, 255);\n"
+            "border-radius: 8px;")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 6, 0, 1, 2)
         self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -530,16 +542,16 @@ class Ui_Append_Seans(object):
         Form.setObjectName("Form")
         Form.resize(1100, 600)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 10, 1061, 571))
         self.gridLayoutWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"\n"
-"border-radius: 8px;\n"
-"\n"
-"\n"
-"")
+                                            "\n"
+                                            "border-radius: 8px;\n"
+                                            "\n"
+                                            "\n"
+                                            "")
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -552,8 +564,8 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.timeEdit.setFont(font)
         self.timeEdit.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                    "border-radius: 12px;\n"
+                                    "color: rgb(255, 255, 255);")
         self.timeEdit.setTime(QtCore.QTime(12, 0, 0))
         self.timeEdit.setObjectName("timeEdit")
         self.gridLayout.addWidget(self.timeEdit, 4, 3, 1, 1)
@@ -565,9 +577,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 4, 2, 1, 1)
         self.spinBox = QtWidgets.QSpinBox(self.gridLayoutWidget)
@@ -578,8 +590,8 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.spinBox.setFont(font)
         self.spinBox.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                   "border-radius: 12px;\n"
+                                   "color: rgb(255, 255, 255);")
         self.spinBox.setMinimum(100)
         self.spinBox.setMaximum(990)
         self.spinBox.setSingleStep(20)
@@ -592,8 +604,8 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.calendarWidget.setFont(font)
         self.calendarWidget.setStyleSheet("color: #2d4262;\n"
-"background-color: rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+                                          "background-color: rgb(255, 255, 255);\n"
+                                          "border-radius: 8px;")
         self.calendarWidget.setObjectName("calendarWidget")
         self.gridLayout.addWidget(self.calendarWidget, 0, 0, 10, 1)
         self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -604,9 +616,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_5.setText("")
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
@@ -618,9 +630,10 @@ class Ui_Append_Seans(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+        self.pushButton_2.setStyleSheet(
+            "background-color: #2d4262;\\nborder-radius: 12px;\\ncolor: rgb(255, 255, 255);\n"
+            "border: 2px solid rgb(255, 255, 255);\n"
+            "border-radius: 8px;")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 8, 2, 1, 2)
         self.lineEdit = QtWidgets.QLineEdit(self.gridLayoutWidget)
@@ -629,8 +642,8 @@ class Ui_Append_Seans(object):
         font.setPointSize(14)
         self.lineEdit.setFont(font)
         self.lineEdit.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                    "border-radius: 12px;\n"
+                                    "color: rgb(255, 255, 255);")
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout.addWidget(self.lineEdit, 2, 3, 1, 1)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -641,9 +654,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                 "background-color: rgb(70, 68, 81);\n"
+                                 "\n"
+                                 "")
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 2, 1, 2)
         self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -654,9 +667,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label_6.setFont(font)
         self.label_6.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_6.setObjectName("label_6")
         self.gridLayout.addWidget(self.label_6, 5, 2, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -669,9 +682,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 3, 2, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -682,9 +695,9 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.label_4.setFont(font)
         self.label_4.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 2, 2, 1, 1)
         self.spinBox_3 = QtWidgets.QSpinBox(self.gridLayoutWidget)
@@ -695,8 +708,8 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.spinBox_3.setFont(font)
         self.spinBox_3.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                     "border-radius: 12px;\n"
+                                     "color: rgb(255, 255, 255);")
         self.spinBox_3.setObjectName("spinBox_3")
         self.gridLayout.addWidget(self.spinBox_3, 3, 3, 1, 1)
         self.pushButton = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -707,8 +720,8 @@ class Ui_Append_Seans(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 6, 2, 1, 2)
 
@@ -725,7 +738,6 @@ class Ui_Append_Seans(object):
         self.label_3.setText(_translate("Form", "№ зала:"))
         self.label_4.setText(_translate("Form", "Название фильма:"))
         self.pushButton.setText(_translate("Form", "Добавить"))
-
 
 
 # Добавление сеанса
@@ -806,8 +818,8 @@ class Ui_W_Date(object):
         Form.setObjectName("Form")
         Form.resize(500, 500)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 10, 461, 471))
         self.gridLayoutWidget.setMinimumSize(QtCore.QSize(0, 50))
@@ -823,8 +835,8 @@ class Ui_W_Date(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 2, 0, 1, 1)
         self.calendarWidget = QtWidgets.QCalendarWidget(self.gridLayoutWidget)
@@ -835,8 +847,8 @@ class Ui_W_Date(object):
         font.setWeight(75)
         self.calendarWidget.setFont(font)
         self.calendarWidget.setStyleSheet("color: #2d4262;\n"
-"background-color: rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+                                          "background-color: rgb(255, 255, 255);\n"
+                                          "border-radius: 8px;")
         self.calendarWidget.setObjectName("calendarWidget")
         self.gridLayout.addWidget(self.calendarWidget, 1, 0, 1, 2)
         self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -847,9 +859,9 @@ class Ui_W_Date(object):
         font.setWeight(75)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setStyleSheet("background-color: #2d4262;\\nborder-radius: 12px;\n"
-"color: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+                                        "color: rgb(255, 255, 255);\n"
+                                        "border: 2px solid rgb(255, 255, 255);\n"
+                                        "border-radius: 8px;")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 2, 1, 1, 1)
 
@@ -893,8 +905,8 @@ class Ui_Stats(object):
         Form.setObjectName("Form")
         Form.resize(1000, 600)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 20, 961, 561))
         font = QtGui.QFont()
@@ -915,9 +927,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_8.setFont(font)
         self.label_8.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_8.setAlignment(QtCore.Qt.AlignCenter)
         self.label_8.setObjectName("label_8")
         self.gridLayout.addWidget(self.label_8, 2, 2, 1, 1)
@@ -984,9 +996,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_9.setFont(font)
         self.label_9.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_9.setAlignment(QtCore.Qt.AlignCenter)
         self.label_9.setObjectName("label_9")
         self.gridLayout.addWidget(self.label_9, 3, 2, 1, 1)
@@ -997,9 +1009,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_7.setFont(font)
         self.label_7.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
         self.gridLayout.addWidget(self.label_7, 1, 2, 1, 1)
@@ -1011,8 +1023,8 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 4, 2, 1, 1)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1023,9 +1035,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                 "background-color: rgb(70, 68, 81);\n"
+                                 "\n"
+                                 "")
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
         self.tableWidget = QtWidgets.QTableWidget(self.gridLayoutWidget)
@@ -1035,9 +1047,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"border-radius: 1px;\n"
-"gridline-color: rgb(70, 68, 81);")
+                                       "background-color: rgb(70, 68, 81);\n"
+                                       "border-radius: 1px;\n"
+                                       "gridline-color: rgb(70, 68, 81);")
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
@@ -1050,8 +1062,8 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 4, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1062,9 +1074,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1075,9 +1087,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_4.setFont(font)
         self.label_4.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1088,9 +1100,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1100,9 +1112,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 4, 0, 1, 1)
         self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -1112,9 +1124,9 @@ class Ui_Stats(object):
         font.setWeight(75)
         self.label_6.setFont(font)
         self.label_6.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
         self.gridLayout.addWidget(self.label_6, 0, 2, 1, 1)
@@ -1162,11 +1174,11 @@ class Stats(QWidget, Ui_Stats):
         self.tableWidget.setRowCount(len(cinema.films) + 1)
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setItem(
-            0, 0, QTableWidgetItem("Название фильма:"))
+            0, 0, QTableWidgetItem("  Название фильма:  "))
         self.tableWidget.setItem(
-            0, 1, QTableWidgetItem("Продано билетов:"))
+            0, 1, QTableWidgetItem("  Продано билетов:  "))
         self.tableWidget.setItem(
-            0, 2, QTableWidgetItem("Выручка:"))
+            0, 2, QTableWidgetItem("  Выручка:  "))
 
         for i in range(1, len(s) + 1):
             self.tableWidget.setItem(
@@ -1377,9 +1389,9 @@ a[x-apple-data-detectors] {
                   <td align="center" valign="top" style="padding:0;Margin:0;width:570px"> 
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
                      <tr style="border-collapse:collapse"> 
-                      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:'Open Sans', sans-serif;line-height:21px;color:#303234">""" + f"""Фильм: {str(self.s[self.k - 
-            1].seans.film.name)}<br>Время: {str(self.s[self.k - 1].seans.time)}<br>Дата: {str(self.s[self.k - 
-            1].seans.date)}<br>Зал: {str(self.s[self.k - 1].seans.n)}<br>{spisok}<strong><span style="font-size:20px"></span></strong></p></td> 
+                      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:'Open Sans', sans-serif;line-height:21px;color:#303234">""" + f"""Фильм: {str(self.s[self.k -
+                                                                                                                                                                                                                                                                                            1].seans.film.name)}<br>Время: {str(self.s[self.k - 1].seans.time)}<br>Дата: {str(self.s[self.k -
+                                                                                                                                                                                                                                                                                                                                                                                     1].seans.date)}<br>Зал: {str(self.s[self.k - 1].seans.n)}<br>{spisok}<strong><span style="font-size:20px"></span></strong></p></td> 
                      </tr> 
                    </table></td> 
                  </tr> 
@@ -1558,7 +1570,7 @@ class ShowSeans(QWidget):
                 self.btn[(j, i)].move(xm, ym)
                 if self.seans.zal[i - 1][j - 1] == 1:
                     self.btn[(j, i)].setStyleSheet(
-                        "color: rgb(255, 255, 255); background-color: rgb(47, 46, 51); border-radius: "
+                        "color: rgb(120, 120, 120); background-color: rgb(47, 46, 51); border-radius: "
                         "12px;")
                     self.btn[(j, i)].setEnabled(False)
                     self.btn[(j, i)].resize(33, 33)
@@ -1596,13 +1608,12 @@ class ShowSeans(QWidget):
                     self.vt.pop(i)
                     break
         else:
-            if self.k <= 15:
-                self.k += 1
-                self.vt.append((xm - 1, ym - 1))
-                self.sender().setStyleSheet(
-                    "color: rgb(255, 255, 255); background-color: rgb(85, 170, 27); border-radius: "
-                    "12px;")
-                self.sender().resize(35, 35)
+            self.k += 1
+            self.vt.append((xm - 1, ym - 1))
+            self.sender().setStyleSheet(
+                "color: rgb(255, 255, 255); background-color: rgb(85, 170, 27); border-radius: "
+                "12px;")
+            self.sender().resize(35, 35)
         if len(self.vt) > 0:
             st = f"{self.seans.price} х {self.k} = {self.seans.price * self.k} р."
         else:
@@ -1624,16 +1635,19 @@ class ShowSeans(QWidget):
                     t = Ticket(self.seans, x, y)
                     self.btn[(x + 1, y + 1)].setEnabled(False)
                     self.btn[(x + 1, y + 1)].setStyleSheet(
-                        "color: rgb(255, 255, 255); background-color:rgb(47, 46, 51); "
+                        "color: rgb(120, 120, 120); background-color:rgb(47, 46, 51); "
                         "border-radius: 12px;")
                     self.btn[(x + 1, y + 1)].resize(33, 33)
-            self.showticket = ShowTicket(len(self.vt), name)
-            # self.showticket.show()
+            if name != "1":
+                self.showticket = ShowTicket(len(self.vt), name)
             self.vt = []
             self.sell.setText("Купить")
+            ex.loadTable()
+
     # выход в главное меню
     def exit_menu(self):
         self.close()
+        ex.loadTable()
 
 
 # Удаление зала
@@ -1696,7 +1710,6 @@ class DZal(QWidget):
             del cinema.zals[sdel2[i]]
         ex.loadTable()
         self.close()
-
 
 
 # Удаление фильмов
@@ -1770,15 +1783,14 @@ class DFilm(QWidget):
         self.close()
 
 
-
 # интерфейс экрана удаления сеансов
 class Ui_Del_Seans(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1000, 500)
         Form.setStyleSheet("\n"
-"\n"
-"background-color: rgb(47, 46, 51);")
+                           "\n"
+                           "background-color: rgb(47, 46, 51);")
         self.gridLayoutWidget = QtWidgets.QWidget(Form)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 20, 961, 461))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
@@ -1793,9 +1805,9 @@ class Ui_Del_Seans(object):
         font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "\n"
+                                   "")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 0, 1, 1, 1)
@@ -1807,9 +1819,9 @@ class Ui_Del_Seans(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"\n"
-"")
+                                 "background-color: rgb(70, 68, 81);\n"
+                                 "\n"
+                                 "")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
@@ -1821,9 +1833,9 @@ class Ui_Del_Seans(object):
         font.setWeight(50)
         self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"border-radius: 1px;\n"
-"gridline-color: rgb(0, 0, 0);")
+                                       "background-color: rgb(70, 68, 81);\n"
+                                       "border-radius: 1px;\n"
+                                       "gridline-color: rgb(0, 0, 0);")
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
@@ -1835,8 +1847,8 @@ class Ui_Del_Seans(object):
         font.setWeight(75)
         self.calendarWidget.setFont(font)
         self.calendarWidget.setStyleSheet("color: #2d4262;\n"
-"background-color: rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+                                          "background-color: rgb(255, 255, 255);\n"
+                                          "border-radius: 8px;")
         self.calendarWidget.setObjectName("calendarWidget")
         self.gridLayout_2.addWidget(self.calendarWidget, 1, 1, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -1848,8 +1860,8 @@ class Ui_Del_Seans(object):
         font.setWeight(75)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout_2.addWidget(self.pushButton_2, 2, 0, 1, 1)
         self.pushButton = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -1861,9 +1873,9 @@ class Ui_Del_Seans(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color: #2d4262;\\nborder-radius: 12px;\n"
-"color: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 255, 255);\n"
-"border-radius: 8px;")
+                                      "color: rgb(255, 255, 255);\n"
+                                      "border: 2px solid rgb(255, 255, 255);\n"
+                                      "border-radius: 8px;")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout_2.addWidget(self.pushButton, 2, 1, 1, 1)
 
@@ -1997,7 +2009,8 @@ class Ui_Menu(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1500, 900)
-        MainWindow.setStyleSheet("background-color: rgb(47, 46, 51);")
+        MainWindow.setStyleSheet("\n"
+                                 "background-color: rgb(47, 46, 51);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -2018,9 +2031,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_7.setFont(font)
-        self.pushButton_7.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_7.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}")
         self.pushButton_7.setObjectName("pushButton_7")
         self.gridLayout.addWidget(self.pushButton_7, 12, 0, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -2031,9 +2049,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_2.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}")
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 6, 0, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -2045,8 +2068,8 @@ class Ui_Menu(object):
         font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"border-radius: 8px;")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "border-radius: 8px;")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 2, 2, 1, 1)
@@ -2059,9 +2082,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);}\n"
+                                      "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                      "border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);}\n"
+                                      "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                      "color: rgb(255, 255, 255);}")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 5, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -2077,7 +2105,7 @@ class Ui_Menu(object):
         self.label.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.label.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.label.setStyleSheet("color: rgb(255, 255, 255);\n"
-"")
+                                 "")
         self.label.setTextFormat(QtCore.Qt.PlainText)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setIndent(-5)
@@ -2091,8 +2119,8 @@ class Ui_Menu(object):
         font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"border-radius: 8px;")
+                                   "background-color: rgb(70, 68, 81);\n"
+                                   "border-radius: 8px;")
         self.label_3.setText("")
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
@@ -2105,8 +2133,8 @@ class Ui_Menu(object):
         font.setWeight(75)
         self.comboBox.setFont(font)
         self.comboBox.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+                                    "border-radius: 12px;\n"
+                                    "color: rgb(255, 255, 255);")
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
@@ -2129,9 +2157,9 @@ class Ui_Menu(object):
         font.setWeight(50)
         self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("color: rgb(255, 255, 255);\n"
-"background-color: rgb(70, 68, 81);\n"
-"border-radius: 1px;\n"
-"gridline-color: rgb(70, 68, 81);")
+                                       "background-color: rgb(70, 68, 81);\n"
+                                       "border-radius: 1px;\n"
+                                       "gridline-color: rgb(70, 68, 81);")
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
@@ -2144,9 +2172,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_5.setFont(font)
-        self.pushButton_5.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_5.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}")
         self.pushButton_5.setObjectName("pushButton_5")
         self.gridLayout.addWidget(self.pushButton_5, 3, 2, 1, 1)
         self.pushButton_4 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -2156,9 +2189,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_4.setFont(font)
-        self.pushButton_4.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_4.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}")
         self.pushButton_4.setObjectName("pushButton_4")
         self.gridLayout.addWidget(self.pushButton_4, 4, 2, 1, 2)
         self.pushButton_3 = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -2170,9 +2208,14 @@ class Ui_Menu(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_3.setFont(font)
-        self.pushButton_3.setStyleSheet("background-color: #2d4262;\n"
-"border-radius: 12px;\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_3.setStyleSheet("QPushButton{background-color: #2d4262;\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:hover { background-color: rgb(55,76,108);\n"
+                                        "border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}\n"
+                                        "QPushButton:pressed { background-color: rgb(35, 56, 88);border-radius: 12px;\n"
+                                        "color: rgb(255, 255, 255);}")
         self.pushButton_3.setObjectName("pushButton_3")
         self.gridLayout.addWidget(self.pushButton_3, 7, 0, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -2343,7 +2386,7 @@ class MyWidget(QMainWindow, Ui_Menu):
             for i in range(len(films)):
                 if films[i].janr == janr or janr == "Все":
                     if films[i].name not in self.newt[data]:
-                        self.newt[data][films[i].name] = []
+                        self.newt[data][films[i].name] = [[]]
 
             for i in range(lamentable):
                 for j in range(len(table[i].seanses)):
@@ -2353,14 +2396,19 @@ class MyWidget(QMainWindow, Ui_Menu):
                             self.newt_btn[data][table[i].seanses[j]] = QPushButton(
                                 "  " + str(table[i].seanses[j].n) + " - " + str(time) + "|" + str(
                                     table[i].seanses[j].price) + "  ")
+                            table[i].seanses[j].al()
+                            if self.newt[data][table[i].seanses[j].film.name] == [[]]:
+                                self.newt[data][table[i].seanses[j].film.name] = []
                             self.newt[data][table[i].seanses[j].film.name].append(
-                                self.newt_btn[data][table[i].seanses[j]])
+                                [self.newt_btn[data][table[i].seanses[j]], table[i].seanses[j].all])
 
                 # создание таблицы
             self.tableWidget.setRowCount(len(self.newt[data]))
             rowlen = 0
-            for key, value in self.newt[data].items():
-                long = len(value)
+            for key, dalue in self.newt[data].items():
+                long = len(dalue)
+                if long > 0:
+                    value = dalue[0]
                 if long == 0:
                     long = 2
                 else:
@@ -2368,28 +2416,32 @@ class MyWidget(QMainWindow, Ui_Menu):
                 if long > rowlen:
                     rowlen = long
             self.tableWidget.setColumnCount(rowlen)
-
             i = -1
             for key, value in self.newt[data].items():
                 i += 1
-                for j in range(len(value) + 1):
+                long = len(value)
+                if value == [[]]:
+                    long = 0
+                for j in range(long + 1):
                     if j == 0:
                         self.tableWidget.setItem(
                             i, j, QTableWidgetItem(key))
                         if i % 2 == 0:
                             self.tableWidget.item(i, 0).setBackground(QColor(45, 66, 98))
-                        if not value:
+                        if long == 0:
                             self.tableWidget.setItem(
                                 i, j + 1,
                                 QTableWidgetItem(" Нет сеансов "))
                             if i % 2 == 0:
                                 self.tableWidget.item(i, 1).setBackground(QColor(45, 66, 98))
                     else:
-                        self.tableWidget.setCellWidget(i, j, value[j - 1])
+                        self.tableWidget.setCellWidget(i, j, value[j - 1][0])
                         if i % 2 == 0:
-                            value[j - 1].setStyleSheet("background-color: rgb(45, 66, 98); font-size: 14pt")
+                            value[j - 1][0].setStyleSheet("background-color: rgb(45, 66, 98); font-size: 14pt")
                         else:
-                            value[j - 1].setStyleSheet("font-size: 14pt")
+                            value[j - 1][0].setStyleSheet("font-size: 14pt")
+                        if value[j - 1][1]:
+                            value[j - 1][0].setStyleSheet("background-color: rgb(95, 66, 98); font-size: 14pt")
 
             self.tableWidget.resizeColumnsToContents()
             self.tableWidget.setColumnWidth(120, 120)
