@@ -48,6 +48,7 @@ organization = json_response["features"][0]
 org_name = organization["properties"]["CompanyMetaData"]["name"]
 org_address = organization["properties"]["CompanyMetaData"]["address"]
 point = organization["geometry"]["coordinates"]
+hor = organization["properties"]["CompanyMetaData"]["Hours"]["text"]
 org_point = "{0},{1}".format(point[0], point[1])
 
 
@@ -55,6 +56,7 @@ s = round(lonlat_distance(float(toponym_longitude), float(toponym_lattitude), fl
 print(f"Aдрес аптеки: {org_address}")
 print(f"Название аптеки: {org_name}")
 print(f"Расстояние до аптеки {s} м")
+print("Часы работы:", hor)
 
 
 map_api_server = "http://static-maps.yandex.ru/1.x/"
@@ -67,4 +69,3 @@ map_params = {
 }
 response = requests.get(map_api_server, params=map_params)
 Image.open(BytesIO(response.content)).show()
-
