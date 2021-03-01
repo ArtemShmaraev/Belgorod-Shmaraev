@@ -80,6 +80,7 @@ class MyWidget(QMainWindow, Ui_Form):
     def otvet(self):
         ot = self.spinBox.value()  # в этой переменной ответ пользователя
         # здесь как то обработай ответ
+        """чтобы менять содержимое вопроса пишешь self.label.setText(здесь текст или переменная)"""
 
 
 
